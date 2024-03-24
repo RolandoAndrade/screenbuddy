@@ -1,30 +1,38 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 
 type Movie = {
   id: number
-  title: string
+  name: string
 }
 
+type MovieResponse = {
+  id: number
+  name: string
+  similar_movies: Movie[]
+}
+
+async function getRecommendations(url: string, movie: string): Promise<MovieResponse> {
+  const response = await fetch(`${url}?movie=${movie}`)
+  return response.json()
+}
 
 function App() {
   const [url, setUrl] = useState('')
   const [movieName, setMovieName] = useState('')
   const [movieList, setMovieList] = useState<Movie[]>([])
+  const [currentMovie, setCurrentMovie] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    if (movieName.length > 3 && url.length > 0) {
-      const apiUrl = `${url}?movie=${movieName}`
-      fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          setMovieList(data)
-        })
-    }
-  }, [movieName]);
-
-  function searchMovie(movie: string) {
-    debounce(() => setMovieName(movie), 300)
+  function searchMovie() {
+    setIsLoading(true)
+    getRecommendations(url, movieName)
+      .then((response) => {
+        setMovieList(response.similar_movies)
+        setCurrentMovie(response.name)
+      }).finally(() => {
+        setIsLoading(false)
+    })
   }
 
   return (
@@ -38,20 +46,35 @@ function App() {
           onChange={(e) => setUrl(e.target.value)}>
         </input>
       </header>
-      <main>
+      <form>
         <h1>Búsqueda de películas similares</h1>
-        <input
-          type="text"
-          placeholder="Star Wars, Matrix, The Lord of the Rings..."
-          value={movieName}
-          onChange={(e) => searchMovie(e.target.value)}
-        />
-        <ul>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          width: '100%'
+        }}>
+          <input
+            type="text"
+            placeholder="Star Wars, Matrix, The Lord of the Rings..."
+            value={movieName}
+            onChange={(e) => setMovieName(e.target.value)}
+          />
+          <button type={'submit'} onClick={(e)=> {
+            e.preventDefault()
+            searchMovie()
+          }}>Buscar</button>
+        </div>
+
+        {currentMovie.length > 0 && <p>Porque viste {currentMovie}</p>}
+        {isLoading && <p>Cargando...</p>}
+        {!isLoading && <ul>
           {movieList.map((movie: Movie) => (
-            <li key={movie.id}>{movie.title}</li>
+            <li key={movie.id}>{movie.name}</li>
           ))}
-        </ul>
-      </main>
+        </ul>}
+      </form>
     </>
 
   )
