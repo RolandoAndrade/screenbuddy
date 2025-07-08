@@ -2,6 +2,12 @@
 
 ScreenBuddy es una aplicación de inteligencia artificial que recomienda películas basándose en las preferencias de otros usuarios con gustos similares. El proyecto combina teoría y práctica sobre sistemas de recomendación, aprendizaje automático y análisis de datos.
 
+
+
+https://github.com/user-attachments/assets/4862f00e-46b4-4495-b9ea-f7e586c07df5
+
+
+
 ## Descripción
 
 ScreenBuddy utiliza técnicas de filtrado colaborativo para analizar los gustos de los usuarios y sugerir películas que podrían interesarles. El sistema se apoya en el dataset MovieLens y emplea algoritmos de machine learning para encontrar similitudes entre usuarios y películas.
